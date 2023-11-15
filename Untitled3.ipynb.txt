@@ -1,0 +1,817 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": []
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "code",
+      "source": [
+        "# Create dictionary with graph element\n",
+        "'''\n",
+        "a-----b\n",
+        "|     |\n",
+        "|     |\n",
+        "c-----d----e\n",
+        "'''\n",
+        "\n",
+        "graph = {\"a\" : [\"b\", \"c\"],\n",
+        "         \"b\" : [\"a\", \"d\"],\n",
+        "         \"c\" : [\"a\", \"d\"],\n",
+        "         \"d\" : [\"e\"],\n",
+        "         \"e\" : [\"d\"]\n",
+        "          }\n",
+        "\n",
+        "print(graph)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "JmVx6hbSuoug",
+        "outputId": "16b47183-3231-4a7d-c8c8-573cd164498a"
+      },
+      "execution_count": 9,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'a': ['b', 'c'], 'b': ['a', 'd'], 'c': ['a', 'd'], 'd': ['e'], 'e': ['d']}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan buat graph\n",
+        "'''\n",
+        "T-------U-------V\n",
+        "|               |\n",
+        "W---------------X\n",
+        "|               |\n",
+        "Z               S\n",
+        "'''\n",
+        "\n",
+        "graph1 = {  \"T\" : [\"U\", \"W\"],\n",
+        "            \"U\" : [\"V\"],\n",
+        "            \"V\" : [\"U\", \"X\"],\n",
+        "            \"W\" : [\"X\", \"Z\"],\n",
+        "            \"X\" : [\"S\", \"W\"]\n",
+        "        }\n",
+        "\n",
+        "print(graph1)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "28cREn07utRO",
+        "outputId": "d1451afd-4124-4578-e4d8-778f6b8f3986"
+      },
+      "execution_count": 10,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'T': ['U', 'W'], 'U': ['V'], 'V': ['U', 'X'], 'W': ['X', 'Z'], 'X': ['S', 'W']}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan buat graph\n",
+        "'''\n",
+        "r-------o-------m\n",
+        "|       |       |\n",
+        "l-------p-------n\n",
+        "'''\n",
+        "\n",
+        "graph2 = {  \"r\" : [\"o\", \"l\"],\n",
+        "            \"o\" : [\"m\", \"p\"],\n",
+        "            \"m\" : [\"o\", \"n\"],\n",
+        "            \"l\" : [\"r\", \"p\"],\n",
+        "            \"p\" : [\"o\", \"n\"],\n",
+        "            \"n\" : [\"m\", \"p\"]\n",
+        "        }\n",
+        "\n",
+        "print(graph2)"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "gBj7mWqAux3F",
+        "outputId": "0ecde41e-3cb3-47b0-e429-5194951e5a64"
+      },
+      "execution_count": 11,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "{'r': ['o', 'l'], 'o': ['m', 'p'], 'm': ['o', 'n'], 'l': ['r', 'p'], 'p': ['o', 'n'], 'n': ['m', 'p']}\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Menampilkan simpul graph\n",
+        "\n",
+        "class Graph:\n",
+        "  def __init__(self, gdict=None):\n",
+        "    if gdict is None:\n",
+        "      gdict = {}\n",
+        "    self.gdict = gdict\n",
+        "\n",
+        "  # get the keys of the dictionnary\n",
+        "  def getVertices(self):\n",
+        "    return list(self.gdict.keys())\n",
+        "\n",
+        "  def edges(self):\n",
+        "    return self.findedges()\n",
+        "\n",
+        "  # add the new edge\n",
+        "  def addEdge(self, edge):\n",
+        "    edge = set(edge)\n",
+        "    (vrtx1, vrtx2) = tuple(edge)\n",
+        "    if vrtx1 in self.gdict:\n",
+        "      self.gdict[vrtx1].append(vrtx2)\n",
+        "    else:\n",
+        "      self.gdict[vrtx1] = [vrtx2]\n",
+        "\n",
+        "  # Find the distinct list of edges\n",
+        "  def findedges(self):\n",
+        "    edgename = []\n",
+        "    for vrtx in self.gdict:\n",
+        "      for nxtvrtx in self.gdict[vrtx]:\n",
+        "        if {nxtvrtx, vrtx} not in edgename:\n",
+        "          edgename.append({vrtx, nxtvrtx})\n",
+        "    return edgename\n",
+        "\n",
+        "  # Add the vertex as a key\n",
+        "  def addVertex(self, vrtx):\n",
+        "    if vrtx not in self.gdict:\n",
+        "      self.gdict[vrtx] = []\n",
+        "\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements = {\n",
+        "    \"a\" : [\"b\", \"c\"],\n",
+        "    \"b\" : [\"a\", \"d\"],\n",
+        "    \"c\" : [\"a\", \"d\"],\n",
+        "    \"d\" : [\"e\"],\n",
+        "    \"e\" : [\"d\"]\n",
+        "}\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g = Graph(graph_elements)\n",
+        "\n",
+        "\n",
+        "# Print the vertices by calling the getVertices method in parentheses\n",
+        "print(g.getVertices())\n",
+        "print(g.edges())\n",
+        "\n",
+        "# Menambah simpul\n",
+        "g.addVertex(\"f\")\n",
+        "print(g.getVertices())\n",
+        "\n",
+        "# menambah sudut\n",
+        "g.addEdge({'a', 'e'})\n",
+        "g.addEdge({'a', 'c'})\n",
+        "print(g.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "UmtCO9qeu4K4",
+        "outputId": "600873a5-47fb-48be-f383-acf8e46cd2d6"
+      },
+      "execution_count": 12,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['a', 'b', 'c', 'd', 'e']\n",
+            "[{'b', 'a'}, {'a', 'c'}, {'d', 'b'}, {'d', 'c'}, {'e', 'd'}]\n",
+            "['a', 'b', 'c', 'd', 'e', 'f']\n",
+            "[{'b', 'a'}, {'a', 'c'}, {'d', 'b'}, {'d', 'c'}, {'e', 'd'}, {'e', 'a'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan elemen simpul graph TUV\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements1 = {\n",
+        "            \"T\" : [\"U\", \"W\"],\n",
+        "            \"U\" : [\"V\"],\n",
+        "            \"V\" : [\"U\", \"X\"],\n",
+        "            \"W\" : [\"X\", \"Z\"],\n",
+        "            \"X\" : [\"S\", \"W\"],\n",
+        "            \"Z\" : [\"W\"],\n",
+        "            \"S\" : [\"X\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g1 = Graph(graph_elements1)\n",
+        "\n",
+        "# Print the vertices by calling the getVertices method in parentheses\n",
+        "print(g1.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "oWQl6KMOvA-S",
+        "outputId": "6fbb6f22-23b6-4b85-e7e9-d8f3f1e5a1df"
+      },
+      "execution_count": 13,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['T', 'U', 'V', 'W', 'X', 'Z', 'S']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan elemen simpul graph rom\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements2 = {\n",
+        "            \"r\" : [\"o\", \"l\"],\n",
+        "            \"o\" : [\"m\", \"p\"],\n",
+        "            \"m\" : [\"o\", \"n\"],\n",
+        "            \"l\" : [\"r\", \"p\"],\n",
+        "            \"p\" : [\"o\", \"n\"],\n",
+        "            \"n\" : [\"m\", \"p\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g2 = Graph(graph_elements2)\n",
+        "\n",
+        "# Print the vertices by calling the getVertices method in parentheses\n",
+        "print(g2.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "gqdcXi71vF7T",
+        "outputId": "fca83da9-97de-412e-94c1-624cec9c38cf"
+      },
+      "execution_count": 14,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['r', 'o', 'm', 'l', 'p', 'n']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan sudut graph TUV\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements1 = {\n",
+        "            \"T\" : [\"U\", \"W\"],\n",
+        "            \"U\" : [\"V\"],\n",
+        "            \"V\" : [\"U\", \"X\"],\n",
+        "            \"W\" : [\"X\", \"Z\"],\n",
+        "            \"X\" : [\"S\", \"W\"],\n",
+        "            \"Z\" : [\"W\"],\n",
+        "            \"S\" : [\"X\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g1 = Graph(graph_elements1)\n",
+        "\n",
+        "# Print the vertices by calling the getVertices method in parentheses\n",
+        "print(g1.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "HRhvnX8EvMHL",
+        "outputId": "88d6e9e0-c60b-43dd-b1f1-738e828ef2b8"
+      },
+      "execution_count": 15,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'T', 'U'}, {'W', 'T'}, {'V', 'U'}, {'V', 'X'}, {'W', 'X'}, {'Z', 'W'}, {'X', 'S'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan sudut graph r o m\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements2 = {\n",
+        "            \"r\" : [\"o\", \"l\"],\n",
+        "            \"o\" : [\"m\", \"p\"],\n",
+        "            \"m\" : [\"o\", \"n\"],\n",
+        "            \"l\" : [\"r\", \"p\"],\n",
+        "            \"p\" : [\"o\", \"n\"],\n",
+        "            \"n\" : [\"m\", \"p\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g2 = Graph(graph_elements2)\n",
+        "\n",
+        "# Print the vertices by calling the getVertices method in parentheses\n",
+        "print(g2.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "qKVzwyfdvRJc",
+        "outputId": "8332456e-f5ac-46e8-dd4d-6ed06f445db7"
+      },
+      "execution_count": 16,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'r', 'o'}, {'l', 'r'}, {'m', 'o'}, {'o', 'p'}, {'m', 'n'}, {'l', 'p'}, {'n', 'p'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan tambah simpul pada graph TUV\n",
+        "graph_elements1 = {\n",
+        "            \"T\" : [\"U\", \"W\"],\n",
+        "            \"U\" : [\"V\"],\n",
+        "            \"V\" : [\"U\", \"X\"],\n",
+        "            \"W\" : [\"X\", \"Z\"],\n",
+        "            \"X\" : [\"S\", \"W\"],\n",
+        "            \"Z\" : [\"W\"],\n",
+        "            \"S\" : [\"X\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g1 = Graph(graph_elements1)\n",
+        "\n",
+        "g1.addVertex(\"f\")\n",
+        "print(g1.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "xE0uFguyznBv",
+        "outputId": "8f6b297e-0534-4879-cac6-781c3848a7f4"
+      },
+      "execution_count": 17,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['T', 'U', 'V', 'W', 'X', 'Z', 'S', 'f']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan tambah simpul pada graph r o m\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements2 = {\n",
+        "            \"r\" : [\"o\", \"l\"],\n",
+        "            \"o\" : [\"m\", \"p\"],\n",
+        "            \"m\" : [\"o\", \"n\"],\n",
+        "            \"l\" : [\"r\", \"p\"],\n",
+        "            \"p\" : [\"o\", \"n\"],\n",
+        "            \"n\" : [\"m\", \"p\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g2 = Graph(graph_elements2)\n",
+        "\n",
+        "g2.addVertex(\"f\")\n",
+        "print(g2.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "OuGnsVcNz1PS",
+        "outputId": "fa32bd9f-4d58-4d00-aded-fa6dc140bf56"
+      },
+      "execution_count": 18,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['r', 'o', 'm', 'l', 'p', 'n', 'f']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan tambah simpul pada edge TUV\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements1 = {\n",
+        "            \"T\" : [\"U\", \"W\"],\n",
+        "            \"U\" : [\"V\"],\n",
+        "            \"V\" : [\"U\", \"X\"],\n",
+        "            \"W\" : [\"X\", \"Z\"],\n",
+        "            \"X\" : [\"S\", \"W\"],\n",
+        "            \"Z\" : [\"W\"],\n",
+        "            \"S\" : [\"X\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g1 = Graph(graph_elements1)\n",
+        "\n",
+        "g1.addEdge({'a', 'e'})\n",
+        "g1.addEdge({'a', 'c'})\n",
+        "print(g1.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "RMIwWoa1043v",
+        "outputId": "039218b8-925d-4c51-a41a-82f746bb34a7"
+      },
+      "execution_count": 19,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'T', 'U'}, {'W', 'T'}, {'V', 'U'}, {'V', 'X'}, {'W', 'X'}, {'Z', 'W'}, {'X', 'S'}, {'e', 'a'}, {'a', 'c'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Latihan tambah simpul pada edge r o m\n",
+        "# Create dictionary with graph elements\n",
+        "graph_elements2 = {\n",
+        "            \"r\" : [\"o\", \"l\"],\n",
+        "            \"o\" : [\"m\", \"p\"],\n",
+        "            \"m\" : [\"o\", \"n\"],\n",
+        "            \"l\" : [\"r\", \"p\"],\n",
+        "            \"p\" : [\"o\", \"n\"],\n",
+        "            \"n\" : [\"m\", \"p\"]\n",
+        "        }\n",
+        "\n",
+        "# Create an instance of the graph class and pass the graph_elements\n",
+        "g2 = Graph(graph_elements2)\n",
+        "\n",
+        "g2.addEdge({'a', 'e'})\n",
+        "g2.addEdge({'a', 'c'})\n",
+        "print(g2.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "w65kJaTW1kHZ",
+        "outputId": "dda590ce-5492-4b36-8a00-1dfbfb862572"
+      },
+      "execution_count": 20,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'r', 'o'}, {'l', 'r'}, {'m', 'o'}, {'o', 'p'}, {'m', 'n'}, {'l', 'p'}, {'n', 'p'}, {'e', 'a'}, {'a', 'c'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "class graph:\n",
+        "  def __init__(self,gdict=None):\n",
+        "    if gdict is None:\n",
+        "      gdict = {}\n",
+        "    self.gdict = gdict\n",
+        "\n",
+        "  def getVertices(self):\n",
+        "    return list(self.gdict.keys())\n",
+        "\n",
+        "  def addVertex(self, vrtx):\n",
+        "    if vrtx not in self.gdict:\n",
+        "      self.gdict[vrtx] = []\n",
+        "\n",
+        "#Create the dictionary with graph element\n",
+        "#Buat kamus dengan elemen grafik\n",
+        "graph_elements =  {\"a\" : [\"b\",\"c\"],\n",
+        "                   \"b\" : [\"a\",\"d\"],\n",
+        "                   \"c\" : [\"a\",\"d\"],\n",
+        "                   \"d\" : [\"c\",\"b\",\"e\"],\n",
+        "                   \"e\" : [\"d\"]\n",
+        "                   }\n",
+        "g = graph(graph_elements)\n",
+        "g.addVertex(\"f\")\n",
+        "\n",
+        "print(g.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "51mg4ynF-a6g",
+        "outputId": "62ff80a6-b8e7-47a4-943f-71173b71be0c"
+      },
+      "execution_count": 21,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['a', 'b', 'c', 'd', 'e', 'f']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "graph_elements = {\"T\" : [\"U\",\"W\"],\n",
+        "                 \"U\" : [\"T\",\"V\"],\n",
+        "                 \"V\" : [\"U\",\"X\"],\n",
+        "                 \"W\" : [\"T\",\"X\",\"Z\"],\n",
+        "                 \"X\" : [\"V\",\"W\",\"S\"],\n",
+        "                 \"Z\" : [\"W\"],\n",
+        "                 \"S\" : [\"X\"]\n",
+        "                 }\n",
+        "g = graph(graph_elements)\n",
+        "g.addVertex(\"Q\")\n",
+        "\n",
+        "print(g.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "Q3_FzLkdB1Hy",
+        "outputId": "cb203f5e-60e4-453b-a078-e4f63f2abe56"
+      },
+      "execution_count": 22,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['T', 'U', 'V', 'W', 'X', 'Z', 'S', 'Q']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "graph_elements ={\"R\" : [\"O\",\"L\"],\n",
+        "                 \"O\" : [\"R\",\"M\",\"P\"],\n",
+        "                 \"M\" : [\"O\",\"N\"],\n",
+        "                 \"L\" : [\"R\",\"P\"],\n",
+        "                 \"P\" : [\"L\",\"O\",\"N\"],\n",
+        "                 \"N\" : [\"M\",\"P\"]\n",
+        "                 }\n",
+        "g = graph(graph_elements)\n",
+        "g.addVertex(\"Q\")\n",
+        "\n",
+        "print(g.getVertices())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "TPwADNcmB7Rf",
+        "outputId": "b12520e7-dda9-41dc-a2e6-5cbb1c7f534b"
+      },
+      "execution_count": 23,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "['R', 'O', 'M', 'L', 'P', 'N', 'Q']\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "class graph:\n",
+        "  def __init__(self,gdict=None):\n",
+        "    if gdict is None:\n",
+        "      gdict = {}\n",
+        "    self.gdict = gdict\n",
+        "\n",
+        "  def edges(self):\n",
+        "    return self.findedges()\n",
+        "\n",
+        "  def AddEdge(self, edge):\n",
+        "    edge = set(edge)\n",
+        "    (vrtx1, vrtx2) = tuple(edge)\n",
+        "    if vrtx1 in self.gdict:\n",
+        "      self.gdict[vrtx1].append(vrtx2)\n",
+        "    else:\n",
+        "      self.gdict[vrtx1] = [vrtx2]\n",
+        "\n",
+        "  def findedges(self):\n",
+        "    edgename = []\n",
+        "    for vrtx in self.gdict:\n",
+        "      for nxtvrtx in self.gdict[vrtx]:\n",
+        "        if {nxtvrtx, vrtx} not in edgename:\n",
+        "          edgename.append({vrtx, nxtvrtx})\n",
+        "    return edgename\n",
+        "\n",
+        "graph_elements =  {\"a\" : [\"b\",\"c\"],\n",
+        "                   \"b\" : [\"a\",\"d\"],\n",
+        "                   \"c\" : [\"a\",\"d\"],\n",
+        "                   \"d\" : [\"c\",\"b\",\"e\"],\n",
+        "                   \"e\" : [\"d\"]\n",
+        "                   }\n",
+        "\n",
+        "g = graph(graph_elements)\n",
+        "g.AddEdge({'a','e'})\n",
+        "g.AddEdge({'a','c'})\n",
+        "\n",
+        "print(g.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "C7znlowNCDMP",
+        "outputId": "9553ae00-695f-4212-a96f-86fac8c11b04"
+      },
+      "execution_count": 24,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'b', 'a'}, {'a', 'c'}, {'d', 'b'}, {'d', 'c'}, {'e', 'd'}, {'e', 'a'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#MENAMBAHKAN SUDUT L KE K DAN N DAN J\n",
+        "graph_elements ={\"R\" : [\"O\",\"L\"],\n",
+        "                 \"O\" : [\"R\",\"M\",\"P\"],\n",
+        "                 \"M\" : [\"O\",\"N\"],\n",
+        "                 \"L\" : [\"R\",\"P\"],\n",
+        "                 \"P\" : [\"L\",\"O\",\"N\"],\n",
+        "                 \"N\" : [\"M\",\"P\"]\n",
+        "                 }\n",
+        "g = graph(graph_elements)\n",
+        "g.AddEdge({'L','K'})\n",
+        "g.AddEdge({'N','J'})\n",
+        "print(g.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "-z5WlJOhCSxm",
+        "outputId": "ea479281-fb2c-4f8b-fd3d-d00336252914"
+      },
+      "execution_count": 25,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'R', 'O'}, {'R', 'L'}, {'O', 'M'}, {'P', 'O'}, {'N', 'M'}, {'P', 'L'}, {'N', 'P'}, {'K', 'L'}, {'J', 'N'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#MENAMBAHKAN SUDUT T KE Z DAN T DAN S\n",
+        "graph_elements = {\"T\" : [\"U\",\"W\"],\n",
+        "                 \"U\" : [\"T\",\"V\"],\n",
+        "                 \"V\" : [\"U\",\"X\"],\n",
+        "                 \"W\" : [\"T\",\"X\",\"Z\"],\n",
+        "                 \"X\" : [\"V\",\"W\",\"S\"],\n",
+        "                 \"Z\" : [\"W\"],\n",
+        "                 \"S\" : [\"X\"]\n",
+        "                 }\n",
+        "g = graph(graph_elements)\n",
+        "g.AddEdge({'T','Z'})\n",
+        "g.AddEdge({'T','S'})\n",
+        "print(g.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "wR54A8iYCHng",
+        "outputId": "0618e8e6-651c-4c95-fbb0-8e0287057991"
+      },
+      "execution_count": 26,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'T', 'U'}, {'W', 'T'}, {'V', 'U'}, {'V', 'X'}, {'W', 'X'}, {'Z', 'W'}, {'X', 'S'}, {'Z', 'T'}, {'T', 'S'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "#MENAMBAHKAN SUDUT R KE P DAN R DAN N\n",
+        "graph_elements ={\"R\" : [\"O\",\"L\"],\n",
+        "                 \"O\" : [\"R\",\"M\",\"P\"],\n",
+        "                 \"M\" : [\"O\",\"N\"],\n",
+        "                 \"L\" : [\"R\",\"P\"],\n",
+        "                 \"P\" : [\"L\",\"O\",\"N\"],\n",
+        "                 \"N\" : [\"M\",\"P\"]\n",
+        "                 }\n",
+        "g = graph(graph_elements)\n",
+        "g.AddEdge({'R','P'})\n",
+        "g.AddEdge({'R','N'})\n",
+        "print(g.edges())"
+      ],
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "DqKeOIUQCNFF",
+        "outputId": "36d6f650-3746-4115-e46b-d6aab59f32be"
+      },
+      "execution_count": 27,
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            "[{'R', 'O'}, {'R', 'L'}, {'R', 'P'}, {'R', 'N'}, {'O', 'M'}, {'P', 'O'}, {'N', 'M'}, {'P', 'L'}, {'N', 'P'}]\n"
+          ]
+        }
+      ]
+    },
+    {
+      "cell_type": "code",
+      "source": [
+        "# Graph LINKED_LIST"
+      ],
+      "metadata": {
+        "id": "lUHNZdkb1pLh"
+      },
+      "execution_count": 28,
+      "outputs": []
+    }
+  ]
+}
